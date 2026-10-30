@@ -239,8 +239,11 @@ crop_banner = crop_by_symbol_index("sample.pdf", tight_table=False)
 
 ## 🗂️ 8. Workspace File Index
 
+- **Document Straightener (Zero Crop):** [`document_deskewer.py`](file:///c:/Users/user/Downloads/ergon-data-study/document_deskewer.py)
+- **Straightened Documents (PDF & PNG):** 📁 [`straightened_documents/`](file:///c:/Users/user/Downloads/ergon-data-study/ergon-data-study/straightened_documents)
 - **Study Guide (This File):** [`note.md`](file:///c:/Users/user/Downloads/ergon-data-study/note.md)
-- **Standalone Production Script:** [`section_cropper.py`](file:///c:/Users/user/Downloads/ergon-data-study/ergon-data-study/section_cropper.py)
+- **Standalone Cropping Script:** [`section_cropper.py`](file:///c:/Users/user/Downloads/ergon-data-study/ergon-data-study/section_cropper.py)
+- **SYMBOL INDEX Anchor Cropper:** [`crop_by_symbol_index.py`](file:///c:/Users/user/Downloads/ergon-data-study/crop_by_symbol_index.py)
 - **Interactive Python Notebook (`# %%`):** [`section_cropper_interactive.py`](file:///c:/Users/user/Downloads/ergon-data-study/section_cropper_interactive.py)
 - **Jupyter Notebook:** [`section_cropper_pipeline.ipynb`](file:///c:/Users/user/Downloads/ergon-data-study/section_cropper_pipeline.ipynb)
 - **Batch Test Runner:** [`batch_test_01_normal_straight.py`](file:///c:/Users/user/Downloads/ergon-data-study/batch_test_01_normal_straight.py)
