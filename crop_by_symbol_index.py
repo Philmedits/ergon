@@ -25,6 +25,26 @@ from PIL import Image
 import pymupdf
 
 
+def normalize_illumination_and_binarize(
+    gray: np.ndarray,
+    block_size: int = 41,
+    contrast_thresh: int = 28,
+) -> np.ndarray:
+    """
+    Normalizes uneven illumination, scanner gradients, and shadows by estimating
+    the local paper background surface using morphological dilation and computing
+    local ink contrast.
+    
+    Returns binary image (ink = 255, paper = 0).
+    Robust against heavy shadows, yellowed paper, and faded ink.
+    """
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (block_size, block_size))
+    bg = cv2.morphologyEx(gray, cv2.MORPH_DILATE, kernel)
+    diff = cv2.subtract(bg, gray)
+    _, bw = cv2.threshold(diff, contrast_thresh, 255, cv2.THRESH_BINARY)
+    return bw
+
+
 def find_symbol_index_y(pdf_doc: pymupdf.Document, img_bgr: np.ndarray, dpi: int = 150) -> tuple[int, str]:
     """
     Locates the top Y-coordinate of the 'SYMBOL INDEX' banner on the page.
@@ -116,7 +136,7 @@ def find_symbol_index_y(pdf_doc: pymupdf.Document, img_bgr: np.ndarray, dpi: int
     # -------------------------------------------------------------------------
     # Scans the vertical ink profile for the characteristic whitespace valley
     gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
-    _, bw = cv2.threshold(gray, 220, 255, cv2.THRESH_BINARY_INV)
+    bw = normalize_illumination_and_binarize(gray)
 
     # Focus on the right half between 40% and 80% height
     roi_top = int(height * 0.40)
@@ -126,6 +146,7 @@ def find_symbol_index_y(pdf_doc: pymupdf.Document, img_bgr: np.ndarray, dpi: int
     # Find where ink drops to near zero for > 40 px, then rises again (the banner)
     valley_indices = np.where(row_ink < 5 * 255)[0]
     if len(valley_indices) > 0:
+        # Find where the valley ends and the SYMBOL INDEX banner begins
         for idx in range(valley_indices[0], len(row_ink)):
             if row_ink[idx] > 30 * 255:
                 banner_y = roi_top + idx
@@ -175,17 +196,20 @@ def crop_by_symbol_index(
     # 2. Determine exact cut Y
     if tight_table:
         # Scan upwards from symbol_y to find where the table ink actually ends
+        # Uses illumination normalization to discard scanner shadows and paper aging
         gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
-        _, bw = cv2.threshold(gray, 220, 255, cv2.THRESH_BINARY_INV)
+        bw = normalize_illumination_and_binarize(gray)
 
-        # Look in the table column (x from 40% to 90%)
-        table_bw = bw[:, int(w * 0.40):int(w * 0.90)]
+        # Filter with horizontal morphological kernel to isolate true table row rules
+        # and ignore loose noise speckles or shadow gradients
+        h_lines = cv2.morphologyEx(bw, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_RECT, (30, 1)))
+        table_roi = h_lines[:, int(w * 0.40):int(w * 0.92)]
         table_bottom_ink_y = None
 
         # Step upward starting 10 px above symbol_y
         for y in range(symbol_y - 10, int(h * 0.25), -1):
-            row_sum = np.sum(table_bw[y, :])
-            if row_sum > 25 * 255:  # found table line / ink
+            row_sum = np.sum(table_roi[y, :])
+            if row_sum > 25 * 255:  # found table line
                 table_bottom_ink_y = y
                 break
 
@@ -214,9 +238,9 @@ def crop_by_symbol_index(
 
 if __name__ == "__main__":
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    docs_dir = os.path.join(current_dir, "ergon-data-study", "generated_test_documents", "01_normal_straight")
+    docs_dir = os.path.join(current_dir, "generated_test_documents", "01_normal_straight")
     if not os.path.exists(docs_dir):
-        docs_dir = os.path.join(current_dir, "generated_test_documents", "01_normal_straight")
+        docs_dir = os.path.join(current_dir, "..", "ergon-data-study", "generated_test_documents", "01_normal_straight")
 
     test_targets = [
         {

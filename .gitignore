@@ -24,3 +24,8 @@ $RECYCLE.BIN/
 *.tmp
 *.bak
 
+# Benchmark and temporary test outputs
+output_test_log009/
+test_22_edge_cases_output/
+test_full_suite_temp/
+

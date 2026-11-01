@@ -26,6 +26,26 @@ from PIL import Image
 import pymupdf
 
 
+def normalize_illumination_and_binarize(
+    gray: np.ndarray,
+    block_size: int = 41,
+    contrast_thresh: int = 28,
+) -> np.ndarray:
+    """
+    Normalizes uneven illumination, scanner gradients, and shadows by estimating
+    the local paper background surface using morphological dilation and computing
+    local ink contrast.
+    
+    Returns binary image (ink = 255, paper = 0).
+    Robust against heavy shadows, yellowed paper, and faded ink.
+    """
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (block_size, block_size))
+    bg = cv2.morphologyEx(gray, cv2.MORPH_DILATE, kernel)
+    diff = cv2.subtract(bg, gray)
+    _, bw = cv2.threshold(diff, contrast_thresh, 255, cv2.THRESH_BINARY)
+    return bw
+
+
 def detect_table_cutoff(img_bgr: np.ndarray) -> int:
     """
     Finds where the core summary table ends on the page.
@@ -38,9 +58,10 @@ def detect_table_cutoff(img_bgr: np.ndarray) -> int:
     """
     height, width = img_bgr.shape[:2]
 
-    # Step 1: Convert to black-and-white (ink = white, paper = black)
+    # Step 1: Illumination normalization & binarization (ink = 255, paper = 0)
+    # Eliminates shadows, scanner vignetting, and faded paper artifacts
     gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
-    _, bw = cv2.threshold(gray, 220, 255, cv2.THRESH_BINARY_INV)
+    bw = normalize_illumination_and_binarize(gray)
 
     # Step 2: Focus search on Upper-Right Table Region
     # The table is always located in the upper 75% of the page and right 65% of the width
@@ -159,9 +180,9 @@ def crop_core_section(
     cut_y = detect_table_cutoff(img_bgr)
 
     if tight_box:
-        # Detect the outer bounding frame
+        # Detect the outer bounding frame using illumination-normalized binarization
         gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
-        _, thresh = cv2.threshold(gray, 240, 255, cv2.THRESH_BINARY_INV)
+        thresh = normalize_illumination_and_binarize(gray)
         h_lines = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_RECT, (100, 1)))
         v_lines = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_RECT, (1, 100)))
         grid = cv2.add(h_lines, v_lines)
