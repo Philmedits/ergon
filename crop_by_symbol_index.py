@@ -19,6 +19,8 @@ Features:
 """
 
 import os
+from itertools import groupby
+from operator import itemgetter
 import cv2
 import numpy as np
 from PIL import Image
@@ -43,6 +45,56 @@ def normalize_illumination_and_binarize(
     diff = cv2.subtract(bg, gray)
     _, bw = cv2.threshold(diff, contrast_thresh, 255, cv2.THRESH_BINARY)
     return bw
+
+
+def detect_metadata_bottom(img_bgr: np.ndarray, gap_thresh: int = 40, margin: int = 15) -> int:
+    """
+    Detects the bottom Y coordinate of the left metadata block (Country, Field, etc.).
+    Uses row projection and whitespace canyon gap detection.
+    Returns 0 if no metadata block is present.
+    """
+    h, w = img_bgr.shape[:2]
+    gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
+    bw = normalize_illumination_and_binarize(gray)
+
+    # Left metadata zone: 18% to 75% height (skips header box), 4% to 46% width
+    roi_top = int(h * 0.18)
+    roi_bottom = int(h * 0.75)
+    roi = bw[roi_top:roi_bottom, int(w * 0.04):int(w * 0.46)]
+
+    row_sums = np.sum(roi > 0, axis=1)
+    active = np.where(row_sums > 25)[0]
+
+    if len(active) == 0:
+        return 0
+
+    lines = []
+    for _, g in groupby(enumerate(active), lambda ix: ix[0] - ix[1]):
+        grp = list(map(itemgetter(1), g))
+        lines.append((roi_top + grp[0], roi_top + grp[-1]))
+
+    if not lines or len(lines) < 2:
+        return 0
+
+    # Rule 1: Genuine metadata block MUST start in upper zone (Y < 32% of page height).
+    # On continuation/spillover pages, the left column is blank at top and only has Symbol Index below!
+    if lines[0][0] > int(h * 0.32):
+        return 0
+
+    # Rule 2: Walk down metadata lines. First gap >= gap_thresh marks the end of metadata
+    for i in range(len(lines) - 1):
+        cur_bottom = lines[i][1]
+        next_top = lines[i + 1][0]
+        gap = next_top - cur_bottom
+        if gap >= gap_thresh:
+            return cur_bottom + margin
+
+    # Rule 3: If no whitespace canyon >= gap_thresh was found, do NOT blindly return the bottom of page!
+    if lines[-1][1] > int(h * 0.55):
+        return int(h * 0.50)
+
+    return lines[-1][1] + margin
+
 
 
 def find_symbol_index_y(pdf_doc: pymupdf.Document, img_bgr: np.ndarray, dpi: int = 150) -> tuple[int, str]:
@@ -214,12 +266,18 @@ def crop_by_symbol_index(
                 break
 
         if table_bottom_ink_y is not None:
-            cut_y = min(symbol_y - margin, table_bottom_ink_y + 8)
+            table_cut = table_bottom_ink_y + 8
         else:
-            cut_y = symbol_y - margin
+            table_cut = symbol_y - margin
+
+        # Dual Protection: Ensure left metadata block is never cut off on short tables
+        meta_cut = detect_metadata_bottom(img_bgr, gap_thresh=40, margin=margin)
+        cut_y = max(table_cut, meta_cut)
+        cut_y = min(cut_y, symbol_y - margin)
     else:
         # Cut immediately above the SYMBOL INDEX banner
         cut_y = symbol_y - margin
+
 
     # 3. Perform crop
     cropped = pil_img.crop((0, 0, w, cut_y))

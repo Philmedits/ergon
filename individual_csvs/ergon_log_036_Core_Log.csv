@@ -1,0 +1,11 @@
+Well,Operator,Country,Licence,Field,Owners,Latitude_DMS,Longitude_DMS,Latitude_DD,Longitude_DD,Elevation_KB_m,Water_Depth_m,Total_Depth_Driller_m,Formation_at_TD,Core_No,Top_Depth_m,Base_Driller_m,Cut_Length_m,Recovery_pct,Recovery_Note
+31/2-36,BP,Norway,PL 046,Troll,"Statoil, Amoco, Conoco, Norsk Hydro","N 60°45'12.30""","E 03°25'44.10""",60.753417,3.428917,25.0,320.0,4500.0,Sognefjord,1,2100.0,2114.8,14.8,96.0,Core Intact
+31/2-36,BP,Norway,PL 046,Troll,"Statoil, Amoco, Conoco, Norsk Hydro","N 60°45'12.30""","E 03°25'44.10""",60.753417,3.428917,25.0,320.0,4500.0,Sognefjord,2,2115.5,2130.3,14.8,97.0,Core Intact
+31/2-36,BP,Norway,PL 046,Troll,"Statoil, Amoco, Conoco, Norsk Hydro","N 60°45'12.30""","E 03°25'44.10""",60.753417,3.428917,25.0,320.0,4500.0,Sognefjord,3,2131.0,2145.8,14.8,98.0,Core Intact
+31/2-36,BP,Norway,PL 046,Troll,"Statoil, Amoco, Conoco, Norsk Hydro","N 60°45'12.30""","E 03°25'44.10""",60.753417,3.428917,25.0,320.0,4500.0,Sognefjord,4,2146.5,2161.3,14.8,99.0,Core Intact
+31/2-36,BP,Norway,PL 046,Troll,"Statoil, Amoco, Conoco, Norsk Hydro","N 60°45'12.30""","E 03°25'44.10""",60.753417,3.428917,25.0,320.0,4500.0,Sognefjord,5,2162.0,2176.8,14.8,95.0,Core Intact
+31/2-36,BP,Norway,PL 046,Troll,"Statoil, Amoco, Conoco, Norsk Hydro","N 60°45'12.30""","E 03°25'44.10""",60.753417,3.428917,25.0,320.0,4500.0,Sognefjord,6,2177.5,2192.3,14.8,96.0,Core Intact
+31/2-36,BP,Norway,PL 046,Troll,"Statoil, Amoco, Conoco, Norsk Hydro","N 60°45'12.30""","E 03°25'44.10""",60.753417,3.428917,25.0,320.0,4500.0,Sognefjord,7,2193.0,2207.8,14.8,97.0,Core Intact
+31/2-36,BP,Norway,PL 046,Troll,"Statoil, Amoco, Conoco, Norsk Hydro","N 60°45'12.30""","E 03°25'44.10""",60.753417,3.428917,25.0,320.0,4500.0,Sognefjord,8,2208.5,2223.3,14.8,98.0,Core Intact
+31/2-36,BP,Norway,PL 046,Troll,"Statoil, Amoco, Conoco, Norsk Hydro","N 60°45'12.30""","E 03°25'44.10""",60.753417,3.428917,25.0,320.0,4500.0,Sognefjord,9,2224.0,2238.8,14.8,99.0,Core Intact
+31/2-36,BP,Norway,PL 046,Troll,"Statoil, Amoco, Conoco, Norsk Hydro","N 60°45'12.30""","E 03°25'44.10""",60.753417,3.428917,25.0,320.0,4500.0,Sognefjord,10,2239.5,2254.3,14.8,95.0,Core Intact
