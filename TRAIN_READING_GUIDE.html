@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🚆 Train Reading Guide: Geological Pipeline Algorithms</title>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.7;
+    color: #24292f;
+    background-color: #f6f8fa;
+    margin: 0;
+    padding: 20px;
+  }
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    background: #ffffff;
+    padding: 40px 50px;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    border: 1px solid #d0d7de;
+  }
+  h1, h2, h3, h4 {
+    color: #0969da;
+    border-bottom: 1px solid #d8dee4;
+    padding-bottom: 8px;
+    margin-top: 36px;
+  }
+  h1 {
+    font-size: 2.2rem;
+    color: #1f2328;
+    border-bottom: 2px solid #0969da;
+  }
+  h2 {
+    font-size: 1.5rem;
+    color: #0969da;
+  }
+  h3 {
+    font-size: 1.25rem;
+    color: #1f2328;
+    border-bottom: none;
+  }
+  code {
+    background-color: #f6f8fa;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    font-size: 0.9em;
+    color: #cf222e;
+    border: 1px solid #e1e4e8;
+  }
+  pre {
+    background-color: #f6f8fa;
+    padding: 16px;
+    border-radius: 8px;
+    overflow-x: auto;
+    border: 1px solid #d0d7de;
+  }
+  pre code {
+    background: none;
+    padding: 0;
+    color: #1f2328;
+    border: none;
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 20px 0;
+  }
+  th, td {
+    border: 1px solid #d0d7de;
+    padding: 10px 14px;
+    text-align: left;
+  }
+  th {
+    background-color: #f6f8fa;
+    font-weight: 600;
+  }
+  tr:nth-child(even) {
+    background-color: #fcfcfc;
+  }
+  blockquote {
+    margin: 20px 0;
+    padding: 12px 20px;
+    background-color: #ddf4ff;
+    border-left: 5px solid #0969da;
+    border-radius: 4px;
+    color: #0969da;
+    font-style: italic;
+  }
+  ul, ol {
+    padding-left: 24px;
+  }
+  li {
+    margin-bottom: 8px;
+  }
+  a {
+    color: #0969da;
+    text-decoration: none;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+  .badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: #2ea44f;
+    color: white;
+    font-weight: bold;
+    font-size: 0.85rem;
+  }
+  @media (max-width: 600px) {
+    body { padding: 10px; }
+    .container { padding: 20px 18px; }
+    h1 { font-size: 1.7rem; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1 id="the-train-companion-how-every-algorithm-in-the-geological-pipeline-actually-works">🚆 The Train Companion: How Every Algorithm in the Geological Pipeline Actually Works</h1>
+<h3 id="a-friendly-intuitive-zero-jargon-guide-to-read-on-your-journey"><em>A friendly, intuitive, zero-jargon guide to read on your journey.</em></h3>
+<hr />
+<h2 id="welcome-bro">☕ Welcome, Bro!</h2>
+<p>Take a deep breath and relax. By the time your 2-hour train ride is over, you won't just "kind of know" what the code does—<strong>you will understand the intuition behind every single algorithm in <code>full_workflow.ipynb</code> better than 99% of programmers.</strong></p>
+<p>You won't find complicated academic mumbo-jumbo here. We are going to explain everything using real-world analogies: <strong>rulers, combs, glass scanner beds, photocopiers, and physical paper.</strong></p>
+<hr />
+<h1 id="table-of-contents">📚 Table of Contents</h1>
+<ol>
+<li><a href="#1-the-big-picture">The Big Picture: What Problem Are We Actually Solving?</a></li>
+<li><a href="#2-image-fundamentals">Image Fundamentals: How Computers See Paper</a></li>
+<li><a href="#3-algorithm-1-binarize_sheet">Algorithm 1: Cleaning Scanner Shadows &amp; Faded Paper (<code>binarize_sheet</code>)</a></li>
+<li><a href="#4-algorithm-2-trim_canvas_padding">Algorithm 2: Trimming Ugly Scanner Letterbox Borders (<code>trim_canvas_padding</code>)</a></li>
+<li><a href="#5-algorithm-3-inspect_and_select_pages">Algorithm 3: Multi-Page Dossier Detective (<code>inspect_and_select_pages</code>)</a></li>
+<li><a href="#6-algorithm-4-detect_orientation_angle">Algorithm 4: Turning Sideways Pages Upright (<code>detect_orientation_angle</code>)</a></li>
+<li><a href="#7-algorithm-5-straighten_scanner_tilt">Algorithm 5: Straightening Mechanical Scanner Tilts (<code>straighten_scanner_tilt</code>)</a></li>
+<li><a href="#8-algorithm-6-isolate_upper_zone">Algorithm 6: The 40% Upper Band Rule (<code>isolate_upper_zone</code>)</a></li>
+<li><a href="#9-algorithm-7-crop_exact_table">Algorithm 7: Precision Table Cutoff &amp; Ladder Periodicity (<code>crop_exact_table</code>)</a></li>
+<li><a href="#10-algorithm-8-read_table_with_gemini">Algorithm 8: Reading Vintage Tables with Gemini Vision (<code>read_table_with_gemini</code>)</a></li>
+<li><a href="#11-algorithm-9-verify_geology_rules">Algorithm 9: The Geologist's Sanity Audit (<code>verify_geology_rules</code>)</a></li>
+<li><a href="#12-algorithm-10-process_all_wells_in_folder">Algorithm 10: Building the Master Database (<code>process_all_wells_in_folder</code>)</a></li>
+<li><a href="#13-quick-reference-cheat-sheet">Quick Reference Cheat Sheet: Numbers &amp; Magic Constants</a></li>
+</ol>
+<hr />
+<p><a name="1-the-big-picture"></a></p>
+<h1 id="1-the-big-picture-what-problem-are-we-actually-solving">1. The Big Picture: What Problem Are We Actually Solving?</h1>
+<p>Imagine you are working for an oil exploration company (like Equinor, Shell, or Total). 
+Back in the 1970s, 1980s, and 1990s, when they drilled wells in the North Sea (Njord, Snorre, Oseberg, Ekofisk), they didn't have cloud databases. </p>
+<p>Geologists recorded drill core samples on <strong>giant paper rolls</strong> (often 3 to 4 meters tall!).
+On these giant rolls:
+* <strong>The Top 30% to 40% (Zone 1):</strong> Holds the <strong>Well Metadata</strong> (Operator, Well Name, Coordinates, Licence) and the <strong>Core Summary Table</strong> (Core #, Top Depth, Base Depth, Recovery %, etc.).
+* <strong>The Middle (Zone 2):</strong> Holds the <strong><code>SYMBOL INDEX</code></strong> (the legend explaining lithology patterns like sandstone, shale, limestone).
+* <strong>The Bottom 60% (Zone 3):</strong> Holds thousands of meters of continuous downhole wireline logs—squiggles showing Gamma Ray, Sonic Velocity, Resistivity, and lithology columns.</p>
+<pre><code>+-----------------------------------------------------------+
+| ZONE 1: WELL HEADER &amp; CORE SUMMARY TABLE                  |  &lt;-- WE ONLY WANT THIS!
+| (Well Name, Operator, Core 1..16, Depths, Recovery %)     |
++-----------------------------------------------------------+
+| ZONE 2: SYMBOL INDEX (Legend)                             |  &lt;-- DO NOT WANT
++-----------------------------------------------------------+
+| ZONE 3: MILES OF DOWNHOLE CURVES &amp; STRIP TRACKS           |
+| (Gamma Ray squiggles, Lithology columns, Wireline logs)   |  &lt;-- NOISY TRASH!
+|                                                           |
++-----------------------------------------------------------+
+</code></pre>
+<h3 id="the-challenge">The Challenge:</h3>
+<p>If you give that giant 4-meter document directly to an AI or an OCR system, it goes crazy! The thousands of downhole squiggly lines look like text, the lithology hatchings look like grid boxes, and the AI hallucinates numbers from the wireline curves.</p>
+<h3 id="our-strategy">Our Strategy:</h3>
+<p>We build an intelligent <strong>visual filter</strong>. We rotate the document upright, straighten mechanical tilts, throw away the bottom 60% of noise, crop cleanly right around the table, and give the AI a <strong>crystal-clear, isolated photograph of just the table</strong>.</p>
+<hr />
+<p><a name="2-image-fundamentals"></a></p>
+<h1 id="2-image-fundamentals-how-computers-see-paper">2. Image Fundamentals: How Computers See Paper</h1>
+<p>Before we look at the code, let's understand how Python and OpenCV see an image:</p>
+<h3 id="1-what-is-a-pixel">1. What is a Pixel?</h3>
+<p>An image is just a giant grid of numbers (like an Excel sheet):
+* If the image is <strong>$1500 \times 1000$</strong>, it has 1,500 rows of pixels and 1,000 columns.
+* In grayscale:
+  * <code>0</code> = Pitch Black (Ink)
+  * <code>255</code> = Pure White (Clean Paper)
+  * <code>128</code> = Medium Gray</p>
+<h3 id="2-the-coordinate-system">2. The Coordinate System:</h3>
+<p>In normal math graphs, $(0,0)$ is at the bottom-left.<br />
+<strong>In computer images, $(0,0)$ is at the TOP-LEFT!</strong>
+* Moving <strong>Down</strong> increases $Y$.
+* Moving <strong>Right</strong> increases $X$.</p>
+<pre><code>(0,0) -------------------------&gt; X (Width)
+  |
+  |      Top-Left of Page
+  |
+  v
+  Y (Height)
+</code></pre>
+<hr />
+<p><a name="3-algorithm-1-binarize_sheet"></a></p>
+<h1 id="3-algorithm-1-cleaning-scanner-shadows-faded-paper-binarize_sheet">3. Algorithm 1: Cleaning Scanner Shadows &amp; Faded Paper (<code>binarize_sheet</code>)</h1>
+<h3 id="the-code-in-the-notebook">The Code in the Notebook:</h3>
+<pre><code class="language-python">def binarize_sheet(gray, block_size=41, contrast_thresh=28):
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (block_size, block_size))
+    bg = cv2.morphologyEx(gray, cv2.MORPH_DILATE, kernel)
+    diff = cv2.subtract(bg, gray)
+    _, bw = cv2.threshold(diff, contrast_thresh, 255, cv2.THRESH_BINARY)
+    return bw
+</code></pre>
+<h3 id="the-intuition-the-photocopy-problem">🧠 The Intuition (The Photocopy Problem):</h3>
+<p>When an old well log is scanned:
+* The paper is often yellowed or brownish from age.
+* The edges of the scanner glass cast dark shadows or vignettes.
+* The ink from a 1982 typewriter might be faint gray, not black.</p>
+<p>If you just do simple thresholding like <code>if pixel &lt; 128: ink else: paper</code>, the scanner shadows on the corners turn into giant black blobs, and faint text disappears!</p>
+<h3 id="how-our-algorithm-solves-it-the-paint-over-trick">💡 How Our Algorithm Solves It (The "Paint-Over" Trick):</h3>
+<ol>
+<li><strong>Morphological Dilation (<code>cv2.MORPH_DILATE</code> with a 41x41 block):</strong></li>
+<li>Imagine a thick paintbrush that is 41 pixels wide. </li>
+<li>It rolls over the page and replaces every pixel with the brightest neighboring pixel.</li>
+<li>Because ink letters and lines are thin (only 2 to 5 pixels wide), the paintbrush completely <strong>erases all the ink</strong> and leaves behind a clean map of the paper's lighting and shadows! We call this the <code>bg</code> (background).</li>
+<li><strong>Subtraction (<code>diff = cv2.subtract(bg, gray)</code>):</strong></li>
+<li>Now we subtract the original image from the clean background map.</li>
+<li>If an area is just clean paper (even if it's dark in a shadow), <code>bg - gray</code> equals <code>0</code> (black).</li>
+<li>If an area has ink, the original was darker than the background, so <code>bg - gray</code> produces a high positive number!</li>
+<li><strong>Threshold (<code>contrast_thresh=28</code>):</strong></li>
+<li>Anything with contrast $&gt; 28$ is guaranteed to be real ink. We turn it pure white (<code>255</code>), and turn the background pure black (<code>0</code>).</li>
+</ol>
+<p><strong>Result:</strong> Shadows vanish, yellow paper turns clean, and every single typed letter and table grid line pops out crisp and clear!</p>
+<hr />
+<p><a name="4-algorithm-2-trim_canvas_padding"></a></p>
+<h1 id="4-algorithm-2-trimming-scanner-letterbox-borders-trim_canvas_padding">4. Algorithm 2: Trimming Scanner Letterbox Borders (<code>trim_canvas_padding</code>)</h1>
+<h3 id="the-code-in-the-notebook_1">The Code in the Notebook:</h3>
+<pre><code class="language-python">def trim_canvas_padding(img_bgr, pad_px=10):
+    gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
+    non_white = np.where(gray &lt; 240)
+    if len(non_white[0]) == 0:
+        return img_bgr
+    y_min, y_max = non_white[0].min(), non_white[0].max()
+    x_min, x_max = non_white[1].min(), non_white[1].max()
+    h, w = img_bgr.shape[:2]
+    if (y_min &gt; 30 or (h - y_max) &gt; 30 or x_min &gt; 30 or (w - x_max) &gt; 30):
+        return img_bgr[max(0, y_min - pad_px):min(h, y_max + pad_px), 
+                       max(0, x_min - pad_px):min(w, x_max + pad_px)]
+    return img_bgr
+</code></pre>
+<h3 id="the-intuition-the-frame-problem">🧠 The Intuition (The Frame Problem):</h3>
+<p>When software converts a PDF page into an image, it often adds artificial white margins (letterbox padding) around the page.
+If there are 100 pixels of empty white space at the top, $Y=0$ is no longer the top of the physical page!
+This throws off all our depth calculations.</p>
+<h3 id="how-the-code-solves-it">💡 How the Code Solves It:</h3>
+<ol>
+<li><code>np.where(gray &lt; 240)</code> looks for every single pixel that is <strong>NOT</strong> pure white paper (meaning ink, lines, text).</li>
+<li><code>y_min</code> finds the very first row from the top where ink actually exists.</li>
+<li><code>y_max</code> finds the last row at the bottom where ink exists.</li>
+<li><code>x_min</code> and <code>x_max</code> find the left and right ink boundaries.</li>
+<li>If the border gap is larger than 30 pixels, it cleanly trims off the empty border, leaving a small, safe 10-pixel breathing cushion (<code>pad_px=10</code>).</li>
+</ol>
+<p><strong>Result:</strong> The image is now tightly bounded to the true physical document edges.</p>
+<hr />
+<p><a name="5-algorithm-3-inspect_and_select_pages"></a></p>
+<h1 id="5-algorithm-3-multi-page-dossier-detective-inspect_and_select_pages">5. Algorithm 3: Multi-Page Dossier Detective (<code>inspect_and_select_pages</code>)</h1>
+<h3 id="the-intuition-the-multi-page-report">🧠 The Intuition (The Multi-Page Report):</h3>
+<p>A completion report from an offshore well is often 4 to 6 pages long.
+* <strong>Page 1:</strong> Well Summary &amp; Cover Page.
+* <strong>Page 2:</strong> Core Table Part 1 (Cores 1 to 10).
+* <strong>Page 3:</strong> Core Table Continuation (Cores 11 to 18).
+* <strong>Page 4:</strong> Downhole Wireline Log Curves.
+* <strong>Page 5:</strong> Mud Logging Parameters.
+* <strong>Page 6:</strong> Drill Bit Records.</p>
+<p>If we blindly process all 6 pages, we waste time, confuse our pipeline, and waste API tokens. We need an algorithm that acts like a human geologist flipping through the pages!</p>
+<h3 id="how-the-algorithm-thinks">💡 How the Algorithm Thinks:</h3>
+<pre><code class="language-mermaid">flowchart TD
+    A[&quot;Render All Pages in PDF&quot;] --&gt; B[&quot;For each page, count horizontal lines on RIGHT HALF&quot;]
+    B --&gt; C[&quot;Identify Primary Page (Highest Table Line Count)&quot;]
+    C --&gt; D{&quot;Does table reach bottom margin (&gt; 78% of height)?&quot;}
+    D -- &quot;YES (Table Spills Over)&quot; --&gt; E[&quot;Check Next Page: Does it have table lines?&quot;]
+    E -- &quot;YES&quot; --&gt; F[&quot;Keep BOTH Page 1 and Page 2!&quot;]
+    D -- &quot;NO (Table Finished)&quot; --&gt; G[&quot;Keep ONLY Primary Page&quot;]
+    F --&gt; H[&quot;Discard all remaining curve/drilling pages&quot;]
+    G --&gt; H
+</code></pre>
+<h3 id="why-do-we-check-the-right-half">Why do we check the <em>Right Half</em>?</h3>
+<p>In Norwegian and North Sea well logs:
+* The <strong>Left Half</strong> contains metadata: Operator name, Field, Licence, Coordinates, Spud Date.
+* The <strong>Right Half</strong> contains the <strong>Coring Table</strong> (a grid of horizontal lines).
+By running our line-counting comb specifically on <code>x: 48% to 94%</code>, we count table rows with high accuracy and ignore text on the left!</p>
+<h3 id="how-spillover-detection-works">How Spillover Detection Works:</h3>
+<ul>
+<li>If Page 1 has 15 cores, the table might fill the entire right half down to the bottom margin ($&gt; 78\%$ of the page height).</li>
+<li>When the algorithm sees <code>bottom_y &gt;= 0.78 * page_h</code>, it says: <em>"Wait, this table was cut off by the bottom of the page! Let's check Page 2."</em></li>
+<li>If Page 2 has continuation lines, it includes Page 2 in <code>kept_pages = [1, 2]</code>.</li>
+<li>It discards Pages 3, 4, 5, and 6.</li>
+</ul>
+<hr />
+<p><a name="6-algorithm-4-detect_orientation_angle"></a></p>
+<h1 id="6-algorithm-4-turning-sideways-pages-upright-detect_orientation_angle">6. Algorithm 4: Turning Sideways Pages Upright (<code>detect_orientation_angle</code>)</h1>
+<h3 id="the-intuition">🧠 The Intuition:</h3>
+<p>Physical scanners often feed wide landscape sheets sideways.
+A human looking at a sideways document immediately tilts their head or turns the paper. Our code must do the exact same thing!</p>
+<h3 id="the-two-secret-tricks">💡 The Two Secret Tricks:</h3>
+<h4 id="trick-1-the-reading-axis-gradient-horizontal-vs-vertical">Trick 1: The Reading Axis Gradient (Horizontal vs. Vertical)</h4>
+<p>Think about reading a book or table in English:
+* You read horizontal lines of text.
+* Between line 1 and line 2, there is white space. Then dark text. Then white space.
+* If you scan <strong>vertically (Down the page)</strong>, brightness changes rapidly: White $\rightarrow$ Black $\rightarrow$ White $\rightarrow$ Black. That is a <strong>vertical gradient ($\Delta Y$)</strong>.
+* If you scan horizontally across a line of text, brightness changes much more slowly.</p>
+<pre><code class="language-python">diff_y = np.abs(gray[1:, :] - gray[:-1, :]) &gt; 40   # Vertical brightness changes
+diff_x = np.abs(gray[:, 1:] - gray[:, :-1]) &gt; 40   # Horizontal brightness changes
+ratio = np.sum(diff_y) / (np.sum(diff_x) + 1.0)
+</code></pre>
+<ul>
+<li>If <code>ratio &gt; 1.05</code>: Horizontal lines dominate! The document is either <strong>$0^\circ$ (Upright)</strong> or <strong>$180^\circ$ (Upside-down)</strong>.</li>
+<li>If <code>ratio &lt; 1.05</code>: Vertical lines dominate! The document is turned sideways (<strong>$90^\circ$</strong> or <strong>$270^\circ$</strong>).</li>
+</ul>
+<h4 id="trick-2-the-bold-header-detector">Trick 2: The Bold Header Detector</h4>
+<p>Now that we know whether it's horizontal or vertical, how do we know if it's upside down?
+* Every well report has a <strong>massive bold header</strong> at the top:
+  * Company Logos ("STATOIL", "NORSK HYDRO")
+  * Giant letters: "WELL COMPLETION LOG"
+* Bold text has <strong>thick strokes</strong>. Normal body text has thin 1-pixel strokes.
+* The code uses a $5 \times 5$ window to find clusters of dense ink:
+  <code>python
+  bold = (box &gt; 15.0) &amp; (bw == 1)</code>
+* If the bold ink cluster is at the <strong>Top</strong> $\rightarrow$ It's <strong>$0^\circ$ (Upright)</strong>.
+* If the bold ink cluster is at the <strong>Bottom</strong> $\rightarrow$ It's <strong>$180^\circ$ (Upside-Down)</strong>.
+* If the bold ink cluster is on the <strong>Right</strong> $\rightarrow$ It was scanned <strong>$90^\circ$ Clockwise</strong>.
+* If the bold ink cluster is on the <strong>Left</strong> $\rightarrow$ It was scanned <strong>$270^\circ$ Clockwise</strong>.</p>
+<p>Once detected, <code>cv2.rotate</code> turns the page in a fraction of a millisecond.</p>
+<hr />
+<p><a name="7-algorithm-5-straighten_scanner_tilt"></a></p>
+<h1 id="7-algorithm-5-straightening-mechanical-scanner-tilts-straighten_scanner_tilt">7. Algorithm 5: Straightening Mechanical Scanner Tilts (<code>straighten_scanner_tilt</code>)</h1>
+<h3 id="the-intuition-the-skew-problem">🧠 The Intuition (The Skew Problem):</h3>
+<p>Have you ever put a paper on a photocopier and closed the lid, but the paper shifted slightly?
+When paper is pulled through mechanical roller scanners at high speed, it often tilts by $+1^\circ, +3.8^\circ,$ or $-4.2^\circ$.</p>
+<p>If an image is tilted by even $3^\circ$:
+* A straight horizontal crop box will slice through the words diagonally!
+* You might chop off the top of Core 1 on the left and the bottom of Core 16 on the right.</p>
+<pre><code>TILTED PAPER:
++----------------------------/
+| Well: 6407/7-1            /
+| Core 1: 2710m - 2725m    /  &lt;-- If you crop with a horizontal rectangle,
+| Core 2: 2725m - 2740m   /       you cut right through the table!
+/------------------------+
+</code></pre>
+<h3 id="how-the-code-straightens-it">💡 How the Code Straightens It:</h3>
+<h4 id="step-1-detect-horizontal-lines-with-hough-transform-cv2houghlinesp">Step 1: Detect Horizontal Lines with Hough Transform (<code>cv2.HoughLinesP</code>)</h4>
+<ul>
+<li>The table grid is made of long horizontal lines.</li>
+<li>The algorithm uses <code>cv2.Canny</code> to detect edges, then <code>cv2.HoughLinesP</code> to connect edge dots into lines with coordinates $(x_1, y_1, x_2, y_2)$.</li>
+</ul>
+<h4 id="step-2-calculate-the-angle-with-trigonometry">Step 2: Calculate the Angle with Trigonometry</h4>
+<p>Remember high school math: $\tan(\theta) = \frac{\Delta Y}{\Delta X}$</p>
+<pre><code class="language-python">angle = np.degrees(np.arctan2(y2 - y1, x2 - x1))
+</code></pre>
+<ul>
+<li>If a line is perfectly flat, $y_2 = y_1$, so $\text{angle} = 0.0^\circ$.</li>
+<li>If the line is tilted upwards, the angle might be $+3.82^\circ$.</li>
+</ul>
+<h4 id="step-3-why-the-median-angle">Step 3: Why the Median Angle?</h4>
+<p>What if the page has a diagonal signature, a geologist's arrow, or an accidental fold? Those would have wild angles like $45^\circ$ or $-60^\circ$.
+* We filter for lines that are near-horizontal (between $-25^\circ$ and $+25^\circ$).
+* We take <code>np.median(angles)</code>. The <strong>median</strong> is immune to outliers! If 50 table lines are tilted at $+3.8^\circ$ and 1 stray line is at $+12^\circ$, the median is exactly $+3.8^\circ$.</p>
+<h4 id="step-4-canvas-expansion-preventing-corner-chopping">Step 4: Canvas Expansion (Preventing Corner Chopping)</h4>
+<p>If you take a rectangular picture and rotate it inside a box, the sharp corners stick out and get chopped off!
+* Our code calculates the new expanded canvas size:
+  <code>python
+  new_w = int((h * sin) + (w * cos))
+  new_h = int((h * cos) + (w * sin))</code>
+* It rotates the image onto this larger white canvas using <code>cv2.warpAffine</code>.</p>
+<p><strong>Result:</strong> All table lines are now dead-level ($0.00^\circ$), with zero clipped corners!</p>
+<hr />
+<p><a name="8-algorithm-6-isolate_upper_zone"></a></p>
+<h1 id="8-algorithm-6-the-40-upper-band-rule-isolate_upper_zone">8. Algorithm 6: The 40% Upper Band Rule (<code>isolate_upper_zone</code>)</h1>
+<h3 id="the-intuition_1">🧠 The Intuition:</h3>
+<p>This is the single most effective insight in our entire pipeline.</p>
+<p>A standard A4 page has an aspect ratio (Height / Width) of around $1.4$.
+A giant composite well log roll has an aspect ratio of <strong>$2.3$ to $4.5$</strong> (e.g. 1563 pixels wide by 3560 pixels tall!).</p>
+<p>On these tall composite logs:
+* The <strong>Header + Core Table</strong> is <em>always</em> in the upper 30% to 35%.
+* The <strong>Symbol Index</strong> starts around 40% to 45%.
+* The <strong>Wireline Curves</strong> start around 50% to 60% and stretch all the way to the floor.</p>
+<pre><code class="language-python">def isolate_upper_zone(image_bgr, height_pct=0.40):
+    h, w = image_bgr.shape[:2]
+    aspect_ratio = h / max(1, w)
+
+    if aspect_ratio &gt; 1.7:
+        target_h = int(h * height_pct)
+        return image_bgr[:target_h, :]
+    return image_bgr
+</code></pre>
+<h3 id="why-is-this-brilliant">Why is this brilliant?</h3>
+<p>Think of it like an <strong>acoustic noise-canceling headphone</strong>:
+* By immediately taking the top 40% (<code>image_bgr[:target_h, :]</code>), we discard 2,136 vertical pixels of downhole squiggles in one line of code!
+* Our table row detectors and boundary croppers in Step 5 never even have to see the downhole curves. They only look at the clean, quiet upper zone.</p>
+<hr />
+<p><a name="9-algorithm-7-crop_exact_table"></a></p>
+<h1 id="9-algorithm-7-precision-table-cutoff-ladder-periodicity-crop_exact_table">9. Algorithm 7: Precision Table Cutoff &amp; Ladder Periodicity (<code>crop_exact_table</code>)</h1>
+<h3 id="the-intuition_2">🧠 The Intuition:</h3>
+<p>The 40% cut isolates the general neighborhood. But where does the table <em>actually stop</em>?
+Does it stop at Core 5? Core 10? Core 16? Core 24?
+We don't want to leave extra white space, and we definitely don't want to include the "SYMBOL INDEX" legend box below it.</p>
+<h3 id="the-dual-engine-table-detective">💡 The Dual-Engine Table Detective:</h3>
+<pre><code>THE &quot;LADDER&quot; CONCEPT:
+  -------------------------  &lt;- Rung 1 (Core 1)
+  -------------------------  &lt;- Rung 2 (Core 2)    Pitch: 18 - 25 px
+  -------------------------  &lt;- Rung 3 (Core 3)    between rungs
+  -------------------------  &lt;- Rung 4 (Core 4)
+  =========================  &lt;- LAST RUNG (TABLE END!)
+
+          [Whitespace Canyon: 40 - 80 px gap]
+
+  +-----------------------+
+  | SYMBOL INDEX (Legend) |  &lt;- DO NOT CROP THIS!
+  +-----------------------+
+</code></pre>
+<h4 id="engine-a-the-ladder-periodicity-engine">Engine A: The Ladder Periodicity Engine</h4>
+<p>Think of table rows like rungs on a physical ladder:
+* Every core row has a roughly equal height (pitch between 14 and 55 pixels).
+* The algorithm uses a horizontal comb (<code>cv2.MORPH_RECT, (25, 1)</code>) that dissolves letters and leaves only continuous horizontal dividing lines.
+* It measures the vertical distance (<code>line_ys[i] - line_ys[i - 1]</code>) between consecutive lines.
+* If it finds 4 or more lines spaced evenly like ladder rungs, it knows: <strong>"This is the Coring Table!"</strong>
+* The bottom of the table is simply the <strong>last rung of that ladder</strong> (<code>ladders[0][-1] + 15</code>).</p>
+<h4 id="engine-b-the-closed-contour-box-engine">Engine B: The Closed Contour Box Engine</h4>
+<p>What if the table is an enclosed rectangular grid with solid outer borders?
+* The algorithm creates a grid mask (<code>table_grid = h_lines + v_lines</code>).
+* It finds all closed rectangular boxes using <code>cv2.findContours</code>.
+* It looks for boxes located on the right half of the upper zone that are large enough to be tables (<code>box_w &gt; 150, box_h &gt; 100</code>).
+* The bottom of the box (<code>y + box_h + 15</code>) marks the end of the table.</p>
+<h4 id="combining-both-engines">Combining Both Engines:</h4>
+<p><code>cutoff_y = max(ladder_end, box_end)</code>
+We crop cleanly at <code>image_bgr[:cutoff_y, :]</code>.</p>
+<p><strong>Result:</strong> A pinpoint crop that captures the entire table down to the very last row, stopping right before the Symbol Index!</p>
+<hr />
+<p><a name="10-algorithm-8-read_table_with_gemini"></a></p>
+<h1 id="10-algorithm-8-reading-vintage-tables-with-gemini-vision-read_table_with_gemini">10. Algorithm 8: Reading Vintage Tables with Gemini Vision (<code>read_table_with_gemini</code>)</h1>
+<h3 id="the-intuition_3">🧠 The Intuition:</h3>
+<p>Why didn't we use traditional OCR like Tesseract or EasyOCR?
+Because 1980s well logs were written on mechanical typewriters:
+* Characters like <code>'8'</code> and <code>'B'</code> look identical.
+* The decimal point in <code>2710.5</code> is often a faded speck of dust.
+* Empty cells confuse OCR column alignment.
+* Mud stains or carbon paper smudges produce gibberish.</p>
+<p><strong>Google Gemini 2.5 Flash Vision</strong> is a multimodal AI that understands visual context. It doesn't just read letters—it reads <em>like an experienced geologist</em>:
+* It knows that a "Top Depth" of <code>2710</code> followed by a "Base Depth" of <code>2725</code> means the cored interval is <code>15</code> meters.
+* If a digit is slightly faded, it uses the context of surrounding depths to resolve it accurately.</p>
+<h3 id="the-code-architecture">The Code Architecture:</h3>
+<pre><code class="language-python">def read_table_with_gemini(image_bgr_or_path, well_name=&quot;&quot;):
+    # 1. SMART CACHE FIRST:
+    # If this well was already extracted, load the CSV instantly!
+    cache_file = f&quot;individual_csvs/{well_name}.csv&quot;
+    if os.path.exists(cache_file):
+        return pd.read_csv(cache_file)
+
+    # 2. PROMPT ENFORCEMENT:
+    # Strict prompt requiring the official 20-column schema as pure JSON.
+    ...
+</code></pre>
+<h3 id="why-caching-matters">Why Caching Matters:</h3>
+<ul>
+<li>In production and during presentations, you don't want to wait 5 seconds for an API call or risk hitting internet drops on a train!</li>
+<li>If the well was already processed, the function loads <code>individual_csvs/{well_name}.csv</code> in <strong>0.01 seconds</strong>!</li>
+<li>If a new well is introduced, it calls the Gemini API, extracts the data, and automatically caches it.</li>
+</ul>
+<hr />
+<p><a name="11-algorithm-9-verify_geology_rules"></a></p>
+<h1 id="11-algorithm-9-the-geologists-sanity-audit-verify_geology_rules">11. Algorithm 9: The Geologist's Sanity Audit (<code>verify_geology_rules</code>)</h1>
+<h3 id="the-intuition_4">🧠 The Intuition:</h3>
+<p>A software engineer blindly trusts data; <strong>a petroleum geologist verifies the physics.</strong></p>
+<p>Even if an AI has 99.5% accuracy, human reviewers will reject the system if it produces impossible numbers. We built 4 domain rules into the code:</p>
+<pre><code>+------------------------------------------------------------------------+
+|                      GEOLOGICAL SANITY CHECKS                          |
++------------------------------------------------------------------------+
+| 1. DEPTH SANITY        | Base Depth &gt;= Top Depth (Depth increases down)|
+| 2. RECOVERY BOUNDS     | 0.0% &lt;= Recovery &lt;= 100.0% (Realistic rock)   |
+| 3. SEQUENCE CONTINUITY | Core 1, Core 2, Core 3... (Sequential order)  |
+| 4. MASS BALANCE        | Cut Length = Base Depth - Top Depth           |
++------------------------------------------------------------------------+
+</code></pre>
+<ol>
+<li><strong>Depth Rule:</strong> When you drill deeper into the Earth, depth increases. If Core 1 has Top = <code>2710m</code> and Base = <code>2705m</code>, that is physically impossible! The check flags <code>Base &lt; Top</code>.</li>
+<li><strong>Recovery Rule:</strong> If you cut 10 meters of rock, you cannot pull 50 meters of rock out of the hole! Recovery must be $\le 100\%$ (we allow up to $105\%$ to account for fractured expansion where shattered rock fragments swell slightly in the core barrel).</li>
+<li><strong>Sequential Rule:</strong> Cores are drilled one after another: Run 1, Run 2, Run 3... If the table jumps from Core 2 to Core 7, it flags a warning.</li>
+</ol>
+<p>When all checks pass, the system prints:
+<code>🌟 Overall QC Status: 100% PASSED!</code></p>
+<hr />
+<p><a name="12-algorithm-10-process_all_wells_in_folder"></a></p>
+<h1 id="12-algorithm-10-building-the-master-database-process_all_wells_in_folder">12. Algorithm 10: Building the Master Database (<code>process_all_wells_in_folder</code>)</h1>
+<h3 id="the-intuition_5">🧠 The Intuition:</h3>
+<p>In the real world, you don't deliver one well at a time. The drilling team wants <strong>one single master spreadsheet</strong> containing all cores across the entire exploration campaign.</p>
+<h3 id="how-it-works">How it Works:</h3>
+<ol>
+<li>Loops through all <code>.pdf</code> files in the input folder (e.g. <code>Njord_Composite_Enclosures_5/</code>).</li>
+<li>Runs our full 7-step pipeline on each enclosure.</li>
+<li>Saves an individual clean CSV for each well into <code>individual_csvs/</code>.</li>
+<li>Concatenates all DataFrames using <code>pd.concat(all_dfs, ignore_index=True)</code>.</li>
+<li>Exports the final deliverable: <strong><code>MASTER_ALL_WELLS_CORE_LOGS.csv</code></strong>.</li>
+</ol>
+<p><strong>Result:</strong> A clean dataset of 67 digitized cores across all 5 wells, with 20 standardized columns matching the official schema contract!</p>
+<hr />
+<p><a name="13-quick-reference-cheat-sheet"></a></p>
+<h1 id="13-quick-reference-cheat-sheet-numbers-magic-constants">13. Quick Reference Cheat Sheet: Numbers &amp; Magic Constants</h1>
+<p>When reading the code on the train, you might wonder: <em>"Why did they pick that specific number?"</em><br />
+Here is the cheat sheet:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Parameter</th>
+<th style="text-align: center;">Value</th>
+<th style="text-align: left;">Why This Specific Number?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>block_size</code></td>
+<td style="text-align: center;"><code>41</code></td>
+<td style="text-align: left;">Wide enough to erase thin letters (2-5px) while preserving large paper background lighting gradients.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>contrast_thresh</code></td>
+<td style="text-align: center;"><code>28</code></td>
+<td style="text-align: left;">Faint 1980s typewriter ink has a contrast around 30-40. 28 catches faint ink without catching paper grain.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>aspect_ratio</code></td>
+<td style="text-align: center;"><code>&gt; 1.7</code></td>
+<td style="text-align: left;">Standard A4 paper is 1.41. Giant composite roll logs are 2.2 to 4.5. 1.7 cleanly separates rolls from standard pages.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>height_pct</code></td>
+<td style="text-align: center;"><code>0.40</code> (40%)</td>
+<td style="text-align: left;">Header + Core Table takes 30-35% of height. 40% gives a safe margin while cutting off 100% of downhole curves.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>minLineLength</code></td>
+<td style="text-align: center;"><code>80</code></td>
+<td style="text-align: left;">Short dashes (text letters) are &lt; 20px. True table dividing lines are $\ge 80$px.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ladder pitch</code></td>
+<td style="text-align: center;"><code>14 to 55</code> px</td>
+<td style="text-align: left;">Standard typed well table row heights range from 18px to 35px at 150 DPI. 14-55 catches all row heights.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>bottom_threshold</code></td>
+<td style="text-align: center;"><code>0.78</code> (78%)</td>
+<td style="text-align: left;">If a table reaches past 78% of the page height, it is overflowing onto the next page (spillover).</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="summary-to-keep-in-mind">🎯 Summary to Keep in Mind</h2>
+<p>Whenever anyone asks you how your system works, you can describe it in three simple sentences:</p>
+<blockquote>
+<p><em>"First, we use classical computer vision to straighten the paper and mute all the noisy downhole curves by isolating the top 40% band.</em><br />
+<em>Second, we pinpoint the exact bottom line of the table using our dual-engine row ladder detector.</em><br />
+<em>Third, we pass that clean, noise-free crop to Gemini Vision and run geological quality audits to guarantee physical consistency."</em></p>
+</blockquote>
+<p>Have a safe journey on the train, bro! Enjoy your reading! 🚆✨</p>
+</div>
+</body>
+</html>
